@@ -2,6 +2,20 @@ Changelog
 ---------
 
 
+1.0.17 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+* Added :class:`PourWaterGR1T2MimicEnvCfg` and registered the
+  ``Isaac-PourWater-GR1T2-Pink-IK-Abs-Mimic-v0`` environment for Isaac Lab
+  Mimic data augmentation of the GR1T2 pour-water task. Defines a 5-step
+  right-arm subtask layout (idle / grasp / approach target / pour / place
+  back) with both source and target cups treated as object reference frames
+  so trajectories generalise across randomized cup poses.
+
+
 1.0.16 (2025-11-10)
 ~~~~~~~~~~~~~~~~~~~
 

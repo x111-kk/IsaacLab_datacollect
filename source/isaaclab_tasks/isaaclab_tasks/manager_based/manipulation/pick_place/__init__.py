@@ -28,6 +28,16 @@ gym.register(
 )
 
 gym.register(
+    id="Isaac-PourWater-GR1T2-Pink-IK-Abs-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pourwater_gr1t2_pink_ik_env_cfg:PourWaterGR1T2PinkIKEnvCfg",
+        "robomimic_bc_cfg_entry_point": f"{agents.__name__}:robomimic/bc_rnn_image_nut_pouring.json",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
     id="Isaac-ExhaustPipe-GR1T2-Pink-IK-Abs-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={

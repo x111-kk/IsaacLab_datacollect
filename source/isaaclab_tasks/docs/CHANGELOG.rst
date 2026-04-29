@@ -1,6 +1,20 @@
 Changelog
 ---------
 
+0.11.17 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+* Added the ``Isaac-PourWater-GR1T2-Pink-IK-Abs-v0`` GR1T2 bimanual pour-water
+  manipulation environment. The robot pours a water proxy from a source cup
+  into a target cup; both cups are randomized in position and yaw at every
+  reset. Includes :class:`PourWaterGR1T2BaseEnvCfg`,
+  :class:`PourWaterGR1T2PinkIKEnvCfg`, the ``reset_object_poses_pour_water``
+  reset event, and the ``task_done_pour_water`` success termination.
+
+
 0.11.16 (2026-04-21)
 ~~~~~~~~~~~~~~~~~~~~
 
