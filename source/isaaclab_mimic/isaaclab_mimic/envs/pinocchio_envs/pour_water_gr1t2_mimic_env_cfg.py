@@ -24,7 +24,7 @@ Subtask layout:
 from isaaclab.envs.mimic_env_cfg import MimicEnvCfg, SubTaskConfig
 from isaaclab.utils import configclass
 
-from isaaclab_tasks.manager_based.manipulation.pick_place.pourwater_gr1t2_pink_ik_env_cfg import (
+from isaaclab_tasks.manager_based.manipulation.pour_water.pour_water_gr1t2_pink_ik_env_cfg import (
     PourWaterGR1T2PinkIKEnvCfg,
 )
 

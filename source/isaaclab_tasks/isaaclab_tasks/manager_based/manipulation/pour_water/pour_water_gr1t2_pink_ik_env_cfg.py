@@ -17,7 +17,7 @@ from isaaclab.devices.openxr.retargeters import GR1T2RetargeterCfg
 from isaaclab.envs.mdp.actions.pink_actions_cfg import PinkInverseKinematicsActionCfg
 from isaaclab.utils import configclass
 
-from isaaclab_tasks.manager_based.manipulation.pick_place.pourwater_gr1t2_base_env_cfg import (
+from isaaclab_tasks.manager_based.manipulation.pour_water.pour_water_gr1t2_base_env_cfg import (
     PourWaterGR1T2BaseEnvCfg,
 )
 

@@ -7,12 +7,14 @@ Changelog
 Added
 ^^^^^
 
-* Added the ``Isaac-PourWater-GR1T2-Pink-IK-Abs-v0`` GR1T2 bimanual pour-water
-  manipulation environment. The robot pours a water proxy from a source cup
-  into a target cup; both cups are randomized in position and yaw at every
-  reset. Includes :class:`PourWaterGR1T2BaseEnvCfg`,
-  :class:`PourWaterGR1T2PinkIKEnvCfg`, the ``reset_object_poses_pour_water``
-  reset event, and the ``task_done_pour_water`` success termination.
+* Added the standalone ``manager_based.manipulation.pour_water`` task package
+  and registered ``Isaac-PourWater-GR1T2-Pink-IK-Abs-v0``. The GR1T2 bimanual
+  robot pours a water proxy from a source cup into a target cup, with both
+  cups independently randomized in position and yaw at every reset. The
+  package ships its own MDP helpers (:class:`PourWaterGR1T2BaseEnvCfg`,
+  :class:`PourWaterGR1T2PinkIKEnvCfg`, ``reset_object_poses_pour_water``,
+  ``task_done_pour_water``) and is added to the ``pinocchio``-gated import
+  blocklist alongside ``pick_place``.
 
 
 0.11.16 (2026-04-21)
