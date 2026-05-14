@@ -3,19 +3,29 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Base configuration for the GR1T2 pour-water manipulation task.
+"""Base configuration for the GR1T2 bimanual pour-water manipulation task.
 
-The task: pour the contents (a small "water" proxy object) from a *source* cup
-into a *target* cup. Both cups are randomized in position and yaw at every
-reset, and the water proxy starts inside the source cup.
+The full task pipeline (executed by a single demo):
 
-The scene is intentionally close to the existing ``nutpour_gr1t2_base_env_cfg``
-so the same Pink-IK + Mimic data-augmentation pipeline can be reused. The main
-differences are:
+1. **Right hand** grasps the *source cup* (the "bottle").
+2. Right hand carries the bottle above the *target cup*.
+3. Right hand tilts the bottle (≥45°) and holds the mouth over the target cup
+   for ~2 s. The simulator does not model water; success of this stage is
+   judged purely kinematically (tilt + mouth-over-cup + sustained).
+4. **Left hand** grasps the target cup.
+5. Left hand places the target cup onto the randomized *placement zone* and
+   holds it there for ~1 s. This is the final task-success signal.
 
-* Only two containers (a source cup and a target cup) — no scale/bin.
-* The water proxy is a small green ball that starts in the source cup.
-* Both cups are randomized at reset (position and yaw).
+Scene assets:
+
+* ``source_cup`` -- the bottle the robot pours from. USD origin is at the
+  bottom of the bottle; the bottle mouth is at ``+0.15 m`` in local frame.
+* ``target_cup`` -- the cup the robot pours into and then places on the zone.
+* ``placement_zone`` -- a thin, kinematic, no-collision visual marker that
+  tells the operator where to place the cup. Randomized at reset.
+
+All subtask signals key off *object pose*, not end-effector pose, so they
+remain correct even if the bottle / cup slips in the gripper during teleop.
 """
 
 import tempfile
@@ -62,8 +72,8 @@ class ObjectTableSceneCfg(InteractiveSceneCfg):
         ),
     )
 
-    # Source cup -- the cup the robot picks up and pours from.
-    # Reuses the ``sorting_beaker_red`` USD as a generic narrow cup.
+    # Source cup -- the bottle the robot pours from. USD origin is at the
+    # bottom; the bottle mouth is at ``+0.15 m`` in the local frame.
     source_cup = RigidObjectCfg(
         prim_path="{ENV_REGEX_NS}/SourceCup",
         init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.13739, 0.45793, 0.9861], rot=[1, 0, 0, 0]),
@@ -74,8 +84,7 @@ class ObjectTableSceneCfg(InteractiveSceneCfg):
         ),
     )
 
-    # Target cup -- the cup the robot pours into.
-    # Reuses the wider ``sorting_bowl_yellow`` USD so the pour is achievable.
+    # Target cup -- the cup the robot pours into and then places on the zone.
     target_cup = RigidObjectCfg(
         prim_path="{ENV_REGEX_NS}/TargetCup",
         init_state=RigidObjectCfg.InitialStateCfg(pos=[0.02779, 0.43007, 0.9860], rot=[1, 0, 0, 0]),
@@ -87,17 +96,18 @@ class ObjectTableSceneCfg(InteractiveSceneCfg):
         ),
     )
 
-    # Water proxy -- a single small rigid object representing the contents to
-    # be poured. Reuses the factory nut USD (small, distinct color) and is
-    # initialized inside the source cup at reset time.
-    water = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Water",
-        init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.13739, 0.45793, 0.9995], rot=[1, 0, 0, 0]),
-        spawn=UsdFileCfg(
-            usd_path=f"{ISAACLAB_NUCLEUS_DIR}/Mimic/nut_pour_task/nut_pour_assets/factory_m16_nut_green.usd",
-            scale=(0.5, 0.5, 0.5),
-            rigid_props=sim_utils.RigidBodyPropertiesCfg(),
-            collision_props=sim_utils.CollisionPropertiesCfg(contact_offset=0.005),
+    # Placement zone -- a thin, kinematic, no-collision visual marker that
+    # tells the operator where to place the target cup at the end of the task.
+    placement_zone = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/PlacementZone",
+        init_state=RigidObjectCfg.InitialStateCfg(pos=[0.30, 0.50, 0.987], rot=[1, 0, 0, 0]),
+        spawn=sim_utils.CylinderCfg(
+            radius=0.05,
+            height=0.002,
+            axis="Z",
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),
+            collision_props=sim_utils.CollisionPropertiesCfg(collision_enabled=False),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.1, 0.8, 0.2), opacity=0.5),
         ),
     )
 
@@ -226,8 +236,34 @@ class ObservationsCfg:
             self.enable_corruption = False
             self.concatenate_terms = False
 
+    @configclass
+    class SubtaskTermsCfg(ObsGroup):
+        """Subtask termination signals consumed by Isaac Lab Mimic.
+
+        Each ObsTerm returns a ``(num_envs,)`` boolean tensor. Mimic reads them
+        through the :py:meth:`PourWaterGR1T2MimicEnv.get_subtask_term_signals`
+        wrapper to annotate where to splice trajectories. **None of these
+        signals terminate the episode** -- that is handled by ``TerminationsCfg``.
+        """
+
+        # Stage 1 (right arm): bottle grasped.
+        grasp_source_cup_right = ObsTerm(func=mdp.grasp_source_cup_right)
+        # Stage 2 (right arm): bottle mouth aligned above target-cup mouth.
+        bottle_above_target_cup = ObsTerm(func=mdp.bottle_above_target_cup)
+        # Stage 3 (right arm): pour executed (tilt + alignment + sustained).
+        pour_completed = ObsTerm(func=mdp.pour_completed)
+        # Stage 4 (left arm): target cup grasped.
+        grasp_target_cup_left = ObsTerm(func=mdp.grasp_target_cup_left)
+        # Stage 5 (left arm) = task success: target cup placed on zone.
+        target_cup_placed = ObsTerm(func=mdp.target_cup_placed)
+
+        def __post_init__(self):
+            self.enable_corruption = False
+            self.concatenate_terms = False
+
     # observation groups
     policy: PolicyCfg = PolicyCfg()
+    subtask_terms: SubtaskTermsCfg = SubtaskTermsCfg()
 
 
 @configclass
@@ -244,10 +280,6 @@ class TerminationsCfg:
         func=mdp.root_height_below_minimum,
         params={"minimum_height": 0.5, "asset_cfg": SceneEntityCfg("target_cup")},
     )
-    water_dropped = DoneTerm(
-        func=mdp.root_height_below_minimum,
-        params={"minimum_height": 0.5, "asset_cfg": SceneEntityCfg("water")},
-    )
 
     success = DoneTerm(func=mdp.task_done_pour_water)
 
@@ -258,17 +290,21 @@ class EventCfg:
 
     reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
 
-    # Randomize the position and yaw of *both* cups at every reset.
-    # The water proxy is moved together with the source cup so that it stays
-    # inside the source cup at reset time.
+    # Randomize cup and placement-zone poses at every reset. Cups and zone are
+    # sampled independently so they can each end up anywhere in their
+    # respective rectangles.
     reset_object = EventTerm(
         func=mdp.reset_object_poses_pour_water,
         mode="reset",
         params={
-            "pose_range": {
+            "cup_pose_range": {
                 "x": (-0.06, 0.06),
                 "y": (-0.06, 0.06),
                 "yaw": (-0.3, 0.3),
+            },
+            "zone_pose_range": {
+                "x": (-0.04, 0.04),
+                "y": (-0.04, 0.04),
             },
         },
     )
