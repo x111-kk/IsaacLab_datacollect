@@ -81,6 +81,7 @@ from torch.utils.data import DataLoader
 import isaaclab_tasks  # noqa: F401
 import isaaclab_tasks.manager_based.locomanipulation.pick_place  # noqa: F401
 import isaaclab_tasks.manager_based.manipulation.pick_place  # noqa: F401
+import isaaclab_tasks.manager_based.manipulation.pour_water  # noqa: F401
 
 
 def normalize_hdf5_actions(config: Config, log_dir: str) -> str:

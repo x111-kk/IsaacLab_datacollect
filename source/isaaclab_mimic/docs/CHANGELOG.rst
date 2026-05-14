@@ -2,6 +2,37 @@ Changelog
 ---------
 
 
+1.0.18 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~
+
+Changed
+^^^^^^^
+
+* Reworked :class:`PourWaterGR1T2MimicEnvCfg` for the bimanual pour-and-place
+  pipeline and added a dedicated :class:`PourWaterGR1T2MimicEnv` wrapper that
+  surfaces the per-subtask boolean signals from the new ``subtask_terms``
+  observation group. The right arm now runs ``grasp_source_cup_right`` ->
+  ``bottle_above_target_cup`` -> ``pour_completed`` -> terminal release, and
+  the left arm runs ``grasp_target_cup_left`` -> terminal placement on the
+  randomized ``placement_zone``. The ``Isaac-PourWater-GR1T2-Pink-IK-Abs-Mimic-v0``
+  registration now points at the new wrapper so automatic subtask annotation
+  works end-to-end.
+
+
+1.0.17 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+* Added :class:`PourWaterGR1T2MimicEnvCfg` and registered the
+  ``Isaac-PourWater-GR1T2-Pink-IK-Abs-Mimic-v0`` environment for Isaac Lab
+  Mimic data augmentation of the GR1T2 pour-water task. Defines a 5-step
+  right-arm subtask layout (idle / grasp / approach target / pour / place
+  back) with both source and target cups treated as object reference frames
+  so trajectories generalise across randomized cup poses.
+
+
 1.0.16 (2025-11-10)
 ~~~~~~~~~~~~~~~~~~~
 

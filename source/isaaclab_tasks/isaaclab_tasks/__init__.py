@@ -14,6 +14,7 @@ The package is structured as follows:
 """
 
 import os
+
 import toml
 
 # Conveniences to other module directories via relative paths
@@ -34,6 +35,8 @@ from .utils import import_packages
 
 # The blacklist is used to prevent importing configs from sub-packages
 # TODO(@ashwinvk): Remove pick_place from the blacklist once pinocchio from Isaac Sim is compatibility
-_BLACKLIST_PKGS = ["utils", ".mdp", "pick_place", "direct.humanoid_amp.motions"]
+# Note: ``pour_water`` also depends on pinocchio (Pink-IK + GR1T2), so it is gated behind
+# ``--enable_pinocchio`` in the same way as ``pick_place``.
+_BLACKLIST_PKGS = ["utils", ".mdp", "pick_place", "pour_water", "direct.humanoid_amp.motions"]
 # Import all configs in this package
 import_packages(__name__, _BLACKLIST_PKGS)
