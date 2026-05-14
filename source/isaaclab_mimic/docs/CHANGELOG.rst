@@ -2,6 +2,21 @@ Changelog
 ---------
 
 
+1.0.19 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~
+
+Changed
+^^^^^^^
+
+* Swapped left/right arm subtask configs in
+  :class:`PourWaterGR1T2MimicEnvCfg` so the **left** arm runs
+  ``grasp_source_cup_left`` -> ``bottle_above_target_cup`` ->
+  ``pour_completed`` -> terminal release, and the **right** arm runs
+  ``grasp_target_cup_right`` -> terminal placement on ``placement_zone``.
+  Updated :class:`PourWaterGR1T2MimicEnv._SUBTASK_SIGNAL_NAMES` to match the
+  new signal names.
+
+
 1.0.18 (2026-04-29)
 ~~~~~~~~~~~~~~~~~~~
 

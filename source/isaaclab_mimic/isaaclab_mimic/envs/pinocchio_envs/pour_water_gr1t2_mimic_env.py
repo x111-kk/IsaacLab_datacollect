@@ -23,13 +23,13 @@ class PourWaterGR1T2MimicEnv(PickPlaceGR1T2MimicEnv):
     """GR1T2 bimanual pour-water Mimic environment wrapper."""
 
     #: Subtask signal names exposed via the ``subtask_terms`` observation group
-    #: in :class:`PourWaterGR1T2BaseEnvCfg`. The order matches the right-then-
-    #: left-arm subtask sequence in :class:`PourWaterGR1T2MimicEnvCfg`.
+    #: in :class:`PourWaterGR1T2BaseEnvCfg`. The order matches the left-then-
+    #: right-arm subtask sequence in :class:`PourWaterGR1T2MimicEnvCfg`.
     _SUBTASK_SIGNAL_NAMES: tuple[str, ...] = (
-        "grasp_source_cup_right",
+        "grasp_source_cup_left",
         "bottle_above_target_cup",
         "pour_completed",
-        "grasp_target_cup_left",
+        "grasp_target_cup_right",
         "target_cup_placed",
     )
 

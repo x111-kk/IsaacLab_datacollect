@@ -7,13 +7,13 @@
 
 The full task pipeline (executed by a single demo):
 
-1. **Right hand** grasps the *source cup* (the "bottle").
-2. Right hand carries the bottle above the *target cup*.
-3. Right hand tilts the bottle (≥45°) and holds the mouth over the target cup
+1. **Left hand** grasps the *source cup* (the "bottle").
+2. Left hand carries the bottle above the *target cup*.
+3. Left hand tilts the bottle (≥45°) and holds the mouth over the target cup
    for ~2 s. The simulator does not model water; success of this stage is
    judged purely kinematically (tilt + mouth-over-cup + sustained).
-4. **Left hand** grasps the target cup.
-5. Left hand places the target cup onto the randomized *placement zone* and
+4. **Right hand** grasps the target cup.
+5. Right hand places the target cup onto the randomized *placement zone* and
    holds it there for ~1 s. This is the final task-success signal.
 
 Scene assets:
@@ -246,15 +246,15 @@ class ObservationsCfg:
         signals terminate the episode** -- that is handled by ``TerminationsCfg``.
         """
 
-        # Stage 1 (right arm): bottle grasped.
-        grasp_source_cup_right = ObsTerm(func=mdp.grasp_source_cup_right)
-        # Stage 2 (right arm): bottle mouth aligned above target-cup mouth.
+        # Stage 1 (left arm): bottle grasped.
+        grasp_source_cup_left = ObsTerm(func=mdp.grasp_source_cup_left)
+        # Stage 2 (left arm): bottle mouth aligned above target-cup mouth.
         bottle_above_target_cup = ObsTerm(func=mdp.bottle_above_target_cup)
-        # Stage 3 (right arm): pour executed (tilt + alignment + sustained).
+        # Stage 3 (left arm): pour executed (tilt + alignment + sustained).
         pour_completed = ObsTerm(func=mdp.pour_completed)
-        # Stage 4 (left arm): target cup grasped.
-        grasp_target_cup_left = ObsTerm(func=mdp.grasp_target_cup_left)
-        # Stage 5 (left arm) = task success: target cup placed on zone.
+        # Stage 4 (right arm): target cup grasped.
+        grasp_target_cup_right = ObsTerm(func=mdp.grasp_target_cup_right)
+        # Stage 5 (right arm) = task success: target cup placed on zone.
         target_cup_placed = ObsTerm(func=mdp.target_cup_placed)
 
         def __post_init__(self):
