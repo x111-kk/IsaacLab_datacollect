@@ -1,6 +1,24 @@
 Changelog
 ---------
 
+0.11.18 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~~
+
+Changed
+^^^^^^^
+
+* Reworked the ``manager_based.manipulation.pour_water`` task into a full
+  bimanual pour-and-place pipeline. The simulator no longer ships a water
+  proxy; task success is judged kinematically from the bottle pose (tilt past
+  45 deg, bottle mouth aligned above the target-cup mouth, held for ~2 s) and
+  from the placement of the target cup on a new ``placement_zone`` marker.
+  All subtask termination signals (``grasp_source_cup_right``,
+  ``bottle_above_target_cup``, ``pour_completed``, ``grasp_target_cup_left``,
+  ``target_cup_placed``) are computed from object pose, not end-effector pose,
+  so they survive in-hand slip during teleoperation. The signals are exposed
+  through a new ``subtask_terms`` observation group consumed by Isaac Lab
+  Mimic.
+
 0.11.17 (2026-04-29)
 ~~~~~~~~~~~~~~~~~~~~
 
