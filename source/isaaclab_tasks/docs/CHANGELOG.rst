@@ -1,6 +1,22 @@
 Changelog
 ---------
 
+0.11.19 (2026-04-29)
+~~~~~~~~~~~~~~~~~~~~
+
+Changed
+^^^^^^^
+
+* Swapped the pour-water arm assignment so the **left** hand grasps the
+  source cup and performs the pour while the **right** hand grasps the
+  target cup and places it on ``placement_zone``. Subtask signals were
+  renamed accordingly: ``grasp_source_cup_right`` ->
+  ``grasp_source_cup_left`` (now reads ``left_hand_pitch_link``) and
+  ``grasp_target_cup_left`` -> ``grasp_target_cup_right`` (now reads
+  ``right_hand_pitch_link``). ``bottle_above_target_cup``,
+  ``pour_completed`` and ``target_cup_placed`` are unchanged because they
+  are arm-agnostic.
+
 0.11.18 (2026-04-29)
 ~~~~~~~~~~~~~~~~~~~~
 

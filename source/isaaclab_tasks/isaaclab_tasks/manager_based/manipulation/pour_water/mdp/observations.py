@@ -95,14 +95,14 @@ def _world_offset_from_root(
     return obj.data.root_pos_w + rotated
 
 
-def grasp_source_cup_right(
+def grasp_source_cup_left(
     env: ManagerBasedRLEnv,
     source_cup_cfg: SceneEntityCfg = SceneEntityCfg("source_cup"),
-    eef_link: str = "right_hand_pitch_link",
+    eef_link: str = "left_hand_pitch_link",
     max_dist: float = 0.10,
     min_lift: float = 0.05,
 ) -> torch.Tensor:
-    """Subtask 1: right hand has grasped the source cup (bottle) and lifted it."""
+    """Subtask 1: left hand has grasped the source cup (bottle) and lifted it."""
     near = _eef_near_object(env, source_cup_cfg, eef_link, max_dist)
     lifted = _object_lifted(env, source_cup_cfg, min_lift)
     return near & lifted
@@ -188,14 +188,14 @@ def pour_completed(
     return counter >= sustain_steps
 
 
-def grasp_target_cup_left(
+def grasp_target_cup_right(
     env: ManagerBasedRLEnv,
     target_cup_cfg: SceneEntityCfg = SceneEntityCfg("target_cup"),
-    eef_link: str = "left_hand_pitch_link",
+    eef_link: str = "right_hand_pitch_link",
     max_dist: float = 0.10,
     min_lift: float = 0.05,
 ) -> torch.Tensor:
-    """Subtask 4: left hand has grasped the target cup and lifted it."""
+    """Subtask 4: right hand has grasped the target cup and lifted it."""
     near = _eef_near_object(env, target_cup_cfg, eef_link, max_dist)
     lifted = _object_lifted(env, target_cup_cfg, min_lift)
     return near & lifted

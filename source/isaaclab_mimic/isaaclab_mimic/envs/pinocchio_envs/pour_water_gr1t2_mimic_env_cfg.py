@@ -8,8 +8,8 @@
 Subtask layout (signals are all *object-based*, computed in
 :mod:`isaaclab_tasks.manager_based.manipulation.pour_water.mdp.observations`):
 
-* Right arm (pour pipeline):
-    1. ``grasp_source_cup_right``   -- pick up the source cup
+* Left arm (pour pipeline):
+    1. ``grasp_source_cup_left``    -- pick up the source cup
        (object_ref = ``source_cup``)
     2. ``bottle_above_target_cup``  -- carry the bottle above the target cup
        (object_ref = ``target_cup``)
@@ -19,8 +19,8 @@ Subtask layout (signals are all *object-based*, computed in
     4. (terminal)                   -- release / return the bottle
        (object_ref = ``source_cup``)
 
-* Left arm (placement pipeline -- runs after the pour):
-    1. ``grasp_target_cup_left``    -- pick up the target cup
+* Right arm (placement pipeline -- runs after the pour):
+    1. ``grasp_target_cup_right``   -- pick up the target cup
        (object_ref = ``target_cup``)
     2. (terminal)                   -- place the target cup on the placement
        zone (object_ref = ``placement_zone``); ends when ``target_cup_placed``
@@ -57,13 +57,13 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
         self.datagen_config.num_fail_demo_to_render = 25
         self.datagen_config.seed = 10
 
-        # ---- Right arm: grasp bottle -> bottle above cup -> pour ---------
-        right_subtasks: list[SubTaskConfig] = []
-        right_subtasks.append(
+        # ---- Left arm: grasp bottle -> bottle above cup -> pour ----------
+        left_subtasks: list[SubTaskConfig] = []
+        left_subtasks.append(
             SubTaskConfig(
-                # Right hand grasps the source cup (bottle).
+                # Left hand grasps the source cup (bottle).
                 object_ref="source_cup",
-                subtask_term_signal="grasp_source_cup_right",
+                subtask_term_signal="grasp_source_cup_left",
                 first_subtask_start_offset_range=(0, 0),
                 subtask_term_offset_range=(10, 20),
                 selection_strategy="nearest_neighbor_object",
@@ -74,7 +74,7 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        right_subtasks.append(
+        left_subtasks.append(
             SubTaskConfig(
                 # Bottle mouth aligned above target cup. Anchored to target_cup
                 # so this segment generalises across target-cup positions.
@@ -90,7 +90,7 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        right_subtasks.append(
+        left_subtasks.append(
             SubTaskConfig(
                 # Pour: tilt the bottle and hold the mouth over the target cup
                 # for sustain_steps. Still anchored to target_cup.
@@ -106,7 +106,7 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        right_subtasks.append(
+        left_subtasks.append(
             SubTaskConfig(
                 # Terminal: release / return the bottle to a stable upright
                 # pose. No term signal; runs until the overall task ends.
@@ -121,15 +121,15 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        self.subtask_configs["right"] = right_subtasks
+        self.subtask_configs["left"] = left_subtasks
 
-        # ---- Left arm: grasp target cup -> place on zone -----------------
-        left_subtasks: list[SubTaskConfig] = []
-        left_subtasks.append(
+        # ---- Right arm: grasp target cup -> place on zone ----------------
+        right_subtasks: list[SubTaskConfig] = []
+        right_subtasks.append(
             SubTaskConfig(
-                # Left hand grasps the target cup.
+                # Right hand grasps the target cup.
                 object_ref="target_cup",
-                subtask_term_signal="grasp_target_cup_left",
+                subtask_term_signal="grasp_target_cup_right",
                 first_subtask_start_offset_range=(0, 0),
                 subtask_term_offset_range=(10, 20),
                 selection_strategy="nearest_neighbor_object",
@@ -140,7 +140,7 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        left_subtasks.append(
+        right_subtasks.append(
             SubTaskConfig(
                 # Terminal: place the target cup on the placement zone.
                 # Anchored to placement_zone so it generalises across zone
@@ -157,4 +157,4 @@ class PourWaterGR1T2MimicEnvCfg(PourWaterGR1T2PinkIKEnvCfg, MimicEnvCfg):
                 apply_noise_during_interpolation=False,
             )
         )
-        self.subtask_configs["left"] = left_subtasks
+        self.subtask_configs["right"] = right_subtasks
